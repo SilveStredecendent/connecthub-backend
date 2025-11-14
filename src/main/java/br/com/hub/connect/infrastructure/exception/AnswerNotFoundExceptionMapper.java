@@ -1,12 +1,12 @@
 package br.com.hub.connect.infrastructure.exception;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import br.com.hub.connect.application.utils.ApiResponse;
 import br.com.hub.connect.domain.exception.AnswerNotFoundException;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Provider
 public class AnswerNotFoundExceptionMapper implements ExceptionMapper<AnswerNotFoundException> {
@@ -16,12 +16,16 @@ public class AnswerNotFoundExceptionMapper implements ExceptionMapper<AnswerNotF
   @Override
   public Response toResponse(AnswerNotFoundException exception) {
     logger.warn("Answer not found: {}", exception.getMessage());
-    
-    ErrorResponse error = new ErrorResponse(
+
+    ErrorResponse errorDetails = new ErrorResponse(
         "ANSWER_NOT_FOUND",
         exception.getMessage(),
         404);
-    
-    return Response.status(404).entity(error).build();
+
+    ApiResponse<ErrorResponse> response = ApiResponse.error(
+        "Answer Not Found",
+        errorDetails);
+
+    return Response.status(404).entity(response).build();
   }
 }

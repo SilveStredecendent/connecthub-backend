@@ -34,6 +34,14 @@ public class User extends BaseEntity {
   @Column(nullable = false)
   public String password;
 
+  @Column(unique = true)
+  public String CPF;
+
+  public String phone;
+
+  @Column(unique = true)
+  public Long enrollmentId;
+
   public Double xp = 0.0;
   public Integer level = 1;
 
@@ -42,6 +50,12 @@ public class User extends BaseEntity {
 
   @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   public Set<UserBadge> badges;
+
+  public static List<User> findAll(int page, int size) {
+    return findAll()
+        .page(Page.of(page, size))
+        .list();
+  }
 
   public static List<User> findAllActive(int page, int size) {
     return find("isActive = true")
@@ -52,6 +66,10 @@ public class User extends BaseEntity {
   public static Optional<User> findActiveById(Long id) {
     return find("id = ?1 and isActive = true", id)
         .firstResultOptional();
+  }
+
+  public static long countAll() {
+    return count();
   }
 
   public static long countActive() {

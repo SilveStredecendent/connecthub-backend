@@ -20,6 +20,13 @@ import jakarta.validation.constraints.NotNull;
 public class UserService {
 
   public List<UserResponseDTO> findAll(int page, int size) {
+    return User.findAll(page, size)
+        .stream()
+        .map(this::toResponseDTO)
+        .collect(Collectors.toList());
+  }
+
+  public List<UserResponseDTO> findAllActive(int page, int size) {
     return User.findAllActive(page, size)
         .stream()
         .map(this::toResponseDTO)
@@ -46,6 +53,9 @@ public class UserService {
     user.role = dto.role() != null ? dto.role() : UserRole.STUDENT;
     user.xp = 0.0;
     user.level = 1;
+    user.enrollmentId = dto.enrollmentId();
+    user.CPF = dto.CPF();
+    user.phone = dto.phone();
 
     user.persist();
     return toResponseDTO(user);
@@ -73,6 +83,15 @@ public class UserService {
     }
     if (dto.role() != null) {
       user.role = dto.role();
+    }
+    if (dto.CPF() != null) {
+      user.CPF = dto.CPF();
+    }
+    if (dto.enrollmentId() != null) {
+      user.enrollmentId = dto.enrollmentId();
+    }
+    if (dto.phone() != null) {
+      user.phone = dto.phone();
     }
 
     user.persist();
@@ -111,7 +130,11 @@ public class UserService {
         .collect(Collectors.toList());
   }
 
-  public long count() {
+  public Long countAll() {
+    return User.countAll();
+  }
+
+  public long countActive() {
     return User.countActive();
   }
 
@@ -121,9 +144,13 @@ public class UserService {
         user.name,
         user.email,
         user.role,
+        user.enrollmentId,
+        user.CPF,
+        user.phone,
         user.xp,
         user.level,
         user.avatarUrl,
+        user.isActive,
         user.createdAt);
   }
 

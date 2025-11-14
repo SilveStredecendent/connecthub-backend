@@ -11,8 +11,10 @@ import br.com.hub.connect.application.gamification.userBadge.dto.CreateUserBadge
 import br.com.hub.connect.application.gamification.userBadge.dto.UserBadgeListResponse;
 import br.com.hub.connect.application.gamification.userBadge.dto.ResponseUserBadgeDTO;
 import br.com.hub.connect.application.gamification.userBadge.service.UserBadgeService;
+import br.com.hub.connect.application.utils.ApiResponse;
 import br.com.hub.connect.application.utils.CountResponse;
 import br.com.hub.connect.domain.exception.PageNotFoundException;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -39,6 +41,7 @@ public class UserBadgeResource {
   UserBadgeService userBadgeService;
 
   @GET
+  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER" })
   @Operation(summary = "List all user badges", description = "Returns a paged list of user badges")
   @APIResponse(responseCode = "200", description = "List of user badges returned successfully")
   public Response getAllUserBadges(
@@ -56,10 +59,14 @@ public class UserBadgeResource {
     long totalCount = userBadgeService.count();
     int totalPages = (int) Math.ceil((double) totalCount / size);
 
-    return Response.ok(new UserBadgeListResponse(totalPages, userBadges)).build();
+    UserBadgeListResponse listResponse = new UserBadgeListResponse(totalPages, userBadges);
+
+    return Response.ok(
+        ApiResponse.success("User badges retrieved successfully", listResponse)).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER", "STUDENT" })
   @Path("/{id}")
   @Operation(summary = "Find user badge by ID")
   @APIResponse(responseCode = "200", description = "User badge found")
@@ -68,10 +75,13 @@ public class UserBadgeResource {
       @Parameter(description = "ID of the user badge", required = true) @PathParam("id") @NotNull Long id) {
 
     ResponseUserBadgeDTO userBadge = userBadgeService.findById(id);
-    return Response.ok(userBadge).build();
+
+    return Response.ok(
+        ApiResponse.success("User badge found", userBadge)).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER", "STUDENT" })
   @Path("/user/{userId}")
   @Operation(summary = "Find badges by user ID", description = "Returns all badges earned by a specific user")
   @APIResponse(responseCode = "200", description = "User badges found")
@@ -79,10 +89,13 @@ public class UserBadgeResource {
       @Parameter(description = "ID of the user", required = true) @PathParam("userId") @NotNull Long userId) {
 
     List<ResponseUserBadgeDTO> userBadges = userBadgeService.findByUserId(userId);
-    return Response.ok(userBadges).build();
+
+    return Response.ok(
+        ApiResponse.success("User badges retrieved successfully", userBadges)).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER" })
   @Path("/badge/{badgeId}")
   @Operation(summary = "Find users by badge ID", description = "Returns all users who earned a specific badge")
   @APIResponse(responseCode = "200", description = "Users with badge found")
@@ -90,10 +103,13 @@ public class UserBadgeResource {
       @Parameter(description = "ID of the badge", required = true) @PathParam("badgeId") @NotNull Long badgeId) {
 
     List<ResponseUserBadgeDTO> userBadges = userBadgeService.findByBadgeId(badgeId);
-    return Response.ok(userBadges).build();
+
+    return Response.ok(
+        ApiResponse.success("Users with badge retrieved successfully", userBadges)).build();
   }
 
   @POST
+  @RolesAllowed({ "ADMIN" })
   @Operation(summary = "Award badge to user", description = "Creates a new user badge (awards badge to user)")
   @APIResponse(responseCode = "201", description = "Badge awarded successfully")
   @APIResponse(responseCode = "400", description = "Invalid data")
@@ -104,38 +120,48 @@ public class UserBadgeResource {
     ResponseUserBadgeDTO createdUserBadge = userBadgeService.create(dto);
 
     return Response.status(Response.Status.CREATED)
-        .entity(createdUserBadge)
+        .entity(ApiResponse.success("Badge awarded successfully", createdUserBadge))
         .location(UriBuilder.fromPath("/api/user-badges/{id}")
             .build(createdUserBadge.id()))
         .build();
   }
 
   @DELETE
+  @RolesAllowed({ "ADMIN" })
   @Path("/{id}")
   @Operation(summary = "Remove badge from user", description = "Removes a user badge by its ID (soft delete)")
-  @APIResponse(responseCode = "204", description = "User badge removed successfully")
+  @APIResponse(responseCode = "200", description = "User badge removed successfully")
   @APIResponse(responseCode = "404", description = "User badge not found")
   public Response removeUserBadge(
       @Parameter(description = "ID of the user badge", required = true) @PathParam("id") @NotNull Long id) {
 
     userBadgeService.delete(id);
-    return Response.noContent().build();
+
+    return Response.ok(
+        ApiResponse.success("User badge removed successfully")).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN" })
   @Path("/health")
   @Operation(summary = "Health check", description = "Returns the health status of the UserBadge service")
   @APIResponse(responseCode = "200", description = "Service is healthy")
   public Response health() {
-    return Response.ok("UserBadge service is healthy").build();
+    return Response.ok(
+        ApiResponse.success("UserBadge service is healthy")).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN" })
   @Path("/count")
   @Operation(summary = "Count user badges", description = "Returns the total number of user badges")
   @APIResponse(responseCode = "200", description = "Total number of user badges returned successfully")
   public Response countUserBadges() {
     long count = userBadgeService.count();
-    return Response.ok(new CountResponse(count)).build();
+
+    CountResponse countResponse = new CountResponse(count);
+
+    return Response.ok(
+        ApiResponse.success("User badges count retrieved", countResponse)).build();
   }
 }

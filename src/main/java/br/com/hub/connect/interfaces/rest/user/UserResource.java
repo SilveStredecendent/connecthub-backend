@@ -44,8 +44,8 @@ public class UserResource {
   UserService userService;
 
   @GET
-  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER" })
-  @Operation(summary = "List all active users", description = "Returns a paged list of active users")
+  @RolesAllowed({ "ADMIN" })
+  @Operation(summary = "List all users", description = "Returns a paged list of active users")
   @APIResponse(responseCode = "200", description = "List of users returned successfully")
   public Response getAllUsers(
       @Parameter(description = "Page number (default: 1)") @QueryParam("page") @DefaultValue("1") int page,
@@ -61,6 +61,34 @@ public class UserResource {
         ? userService.findByRole(role, pageIndex, size)
         : userService.findAll(pageIndex, size);
 
+    var totalCount = getAllUsersCount();
+    int totalPages = (int) Math.ceil((double) totalCount / size);
+
+    UserListResponseDTO listResponse = new UserListResponseDTO(totalPages, users);
+
+    return Response.ok(
+        ApiResponse.success("Users retrieved successfully", listResponse)).build();
+  }
+
+  @GET()
+  @RolesAllowed({ "ADMIN" })
+  @Path("/active")
+  @Operation(summary = "List all active users", description = "Returns a paged list of active users")
+  @APIResponse(responseCode = "200", description = "List of users returned successfully")
+  public Response getAllUsersActiveUsers(
+      @Parameter(description = "Page number (default: 1)") @QueryParam("page") @DefaultValue("1") int page,
+      @Parameter(description = "Page size (default: 10)") @QueryParam("size") @DefaultValue("10") int size,
+      @Parameter(description = "Filter by role") @QueryParam("role") UserRole role) {
+
+    if (page < 1) {
+      throw new PageNotFoundException();
+    }
+    int pageIndex = page - 1;
+
+    List<UserResponseDTO> users = (role != null)
+        ? userService.findByRole(role, pageIndex, size)
+        : userService.findAllActive(pageIndex, size);
+
     var totalCount = getActiveUsersCount();
     int totalPages = (int) Math.ceil((double) totalCount / size);
 
@@ -71,7 +99,7 @@ public class UserResource {
   }
 
   @GET
-  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER" })
+  @RolesAllowed({ "ADMIN" })
   @Path("/{id}")
   @Operation(summary = "Find user by ID")
   @APIResponse(responseCode = "200", description = "User found")
@@ -87,7 +115,7 @@ public class UserResource {
 
   @POST
   @Operation(summary = "Create a new user")
-  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER" })
+  @RolesAllowed({ "ADMIN" })
   @APIResponse(responseCode = "201", description = "User created successfully")
   @APIResponse(responseCode = "400", description = "Invalid data")
   @APIResponse(responseCode = "409", description = "Email already exists")
@@ -166,6 +194,19 @@ public class UserResource {
   @Path("/count")
   @Operation(summary = "Count active users", description = "Returns the total number of active users")
   @APIResponse(responseCode = "200", description = "Total number of active users returned successfully")
+  public Response countAllUsers() {
+    long count = getAllUsersCount();
+    CountResponse countResponse = new CountResponse(count);
+
+    return Response.ok(
+        ApiResponse.success("Active users count retrieved", countResponse)).build();
+  }
+
+  @GET
+  @RolesAllowed({ "ADMIN" })
+  @Path("/count-active")
+  @Operation(summary = "Count active users", description = "Returns the total number of active users")
+  @APIResponse(responseCode = "200", description = "Total number of active users returned successfully")
   public Response countActiveUsers() {
     long count = getActiveUsersCount();
     CountResponse countResponse = new CountResponse(count);
@@ -174,7 +215,11 @@ public class UserResource {
         ApiResponse.success("Active users count retrieved", countResponse)).build();
   }
 
+  private long getAllUsersCount() {
+    return userService.countAll();
+  }
+
   private long getActiveUsersCount() {
-    return userService.count();
+    return userService.countActive();
   }
 }

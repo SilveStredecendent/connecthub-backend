@@ -13,7 +13,9 @@ import br.com.hub.connect.application.gamification.badge.dto.ResponseBadgeDTO;
 import br.com.hub.connect.application.gamification.badge.dto.UpdateBadgeDTO;
 import br.com.hub.connect.domain.exception.PageNotFoundException;
 import br.com.hub.connect.application.gamification.badge.service.BadgeService;
+import br.com.hub.connect.application.utils.ApiResponse;
 import br.com.hub.connect.application.utils.CountResponse;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -41,14 +43,13 @@ public class BadgeResource {
   BadgeService badgeService;
 
   @GET
+  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER", "STUDENT" })
   @Operation(summary = "List all active badges", description = "Returns a paged list of active badges")
   @APIResponse(responseCode = "200", description = "List of badges returned successfully")
   @APIResponse(responseCode = "400", description = "Invalid pagination parameters")
   public Response getAllBadges(
       @Parameter(description = "Page number (default: 1)") @QueryParam("page") @DefaultValue("1") int page,
-
       @Parameter(description = "Page size (default: 10)") @QueryParam("size") @DefaultValue("10") int size,
-
       @Parameter(description = "Filter by criteria") @QueryParam("criteria") String criteria) {
 
     if (page < 1) {
@@ -64,10 +65,14 @@ public class BadgeResource {
     long totalCount = badgeService.count();
     int totalPages = (int) Math.ceil((double) totalCount / size);
 
-    return Response.ok(new BadgeListResponse(totalPages, badges)).build();
+    BadgeListResponse listResponse = new BadgeListResponse(totalPages, badges);
+
+    return Response.ok(
+        ApiResponse.success("Badges retrieved successfully", listResponse)).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER", "STUDENT" })
   @Path("/{id}")
   @Operation(summary = "Find badge by ID")
   @APIResponse(responseCode = "200", description = "Badge found")
@@ -76,10 +81,13 @@ public class BadgeResource {
       @Parameter(description = "ID of the badge", required = true) @PathParam("id") @NotNull Long id) {
 
     ResponseBadgeDTO badge = badgeService.findById(id);
-    return Response.ok(badge).build();
+
+    return Response.ok(
+        ApiResponse.success("Badge found", badge)).build();
   }
 
   @POST
+  @RolesAllowed({ "ADMIN" })
   @Operation(summary = "Create a new badge")
   @APIResponse(responseCode = "201", description = "Badge created successfully")
   @APIResponse(responseCode = "400", description = "Invalid data")
@@ -88,13 +96,14 @@ public class BadgeResource {
     ResponseBadgeDTO createdBadge = badgeService.create(dto);
 
     return Response.status(Response.Status.CREATED)
-        .entity(createdBadge)
+        .entity(ApiResponse.success("Badge created successfully", createdBadge))
         .location(UriBuilder.fromPath("/api/badges/{id}")
             .build(createdBadge.id()))
         .build();
   }
 
   @PATCH
+  @RolesAllowed({ "ADMIN" })
   @Path("/{id}")
   @Operation(summary = "Update an existing badge")
   @APIResponse(responseCode = "200", description = "Badge updated successfully")
@@ -104,30 +113,34 @@ public class BadgeResource {
       @Valid UpdateBadgeDTO dto) {
 
     ResponseBadgeDTO updatedBadge = badgeService.update(id, dto);
-    return Response.ok(updatedBadge).build();
+
+    return Response.ok(
+        ApiResponse.success("Badge updated successfully", updatedBadge)).build();
   }
 
   @DELETE
+  @RolesAllowed({ "ADMIN" })
   @Path("/{id}")
   @Operation(summary = "Delete a badge", description = "Removes a badge by its ID (soft delete)")
-  @APIResponse(responseCode = "204", description = "Badge removed successfully")
+  @APIResponse(responseCode = "200", description = "Badge removed successfully")
   @APIResponse(responseCode = "404", description = "Badge not found")
   public Response deleteBadge(
       @Parameter(description = "ID of the badge", required = true) @PathParam("id") @NotNull Long id) {
 
     badgeService.delete(id);
-    return Response.noContent().build();
+
+    return Response.ok(
+        ApiResponse.success("Badge deleted successfully")).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN", "COORDINATOR", "TEACHER", "STUDENT" })
   @Path("/search")
   @Operation(summary = "Search badges by name", description = "Returns badges that contain the specified name")
   @APIResponse(responseCode = "200", description = "Search results returned successfully")
   public Response searchBadgesByName(
       @Parameter(description = "Name to search for", required = true) @QueryParam("name") String name,
-
       @Parameter(description = "Page number (default: 1)") @QueryParam("page") @DefaultValue("1") int page,
-
       @Parameter(description = "Page size (default: 10)") @QueryParam("size") @DefaultValue("10") int size) {
 
     if (page < 1) {
@@ -141,23 +154,32 @@ public class BadgeResource {
     long totalCount = badgeService.count();
     int totalPages = (int) Math.ceil((double) totalCount / size);
 
-    return Response.ok(new BadgeListResponse(totalPages, badges)).build();
+    BadgeListResponse listResponse = new BadgeListResponse(totalPages, badges);
+
+    return Response.ok(
+        ApiResponse.success("Badges search completed successfully", listResponse)).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN" })
   @Path("/health")
   @Operation(summary = "Health check", description = "Returns the health status of the Badge service")
   @APIResponse(responseCode = "200", description = "Service is healthy")
   public Response health() {
-    return Response.ok("Badge service is healthy").build();
+    return Response.ok(
+        ApiResponse.success("Badge service is healthy")).build();
   }
 
   @GET
+  @RolesAllowed({ "ADMIN" })
   @Path("/count")
   @Operation(summary = "Count active badges", description = "Returns the total number of active badges")
   @APIResponse(responseCode = "200", description = "Total number of active badges returned successfully")
   public Response countActiveBadges() {
     long count = badgeService.count();
-    return Response.ok(new CountResponse(count)).build();
+    CountResponse countResponse = new CountResponse(count);
+
+    return Response.ok(
+        ApiResponse.success("Active badges count retrieved", countResponse)).build();
   }
 }

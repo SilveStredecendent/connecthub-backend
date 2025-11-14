@@ -1,6 +1,7 @@
 package br.com.hub.connect.infrastructure.exception;
 
 import br.com.hub.connect.domain.exception.UserAlreadyHasBadgeException;
+import br.com.hub.connect.application.utils.ApiResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import jakarta.ws.rs.core.Response;
@@ -15,11 +16,15 @@ public class UserAlreadyHasBadgeExceptionMapper implements ExceptionMapper<UserA
   public Response toResponse(UserAlreadyHasBadgeException exception) {
     logger.warn("User already has badge: {}", exception.getMessage());
 
-    ErrorResponse error = new ErrorResponse(
+    ErrorResponse errorDetails = new ErrorResponse(
         "USER_ALREADY_HAS_BADGE",
         exception.getMessage(),
         409);
 
-    return Response.status(409).entity(error).build();
+    ApiResponse<ErrorResponse> response = ApiResponse.error(
+        "User already has badge",
+        errorDetails);
+
+    return Response.status(409).entity(response).build();
   }
 }

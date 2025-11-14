@@ -1,10 +1,20 @@
 -- 1. USERS
-INSERT INTO users (id, role, name, email, password, xp, level, avatar_url, is_active, created_at, updated_at) VALUES
-(1, 'STUDENT', 'João Silva', 'joao.silva@estudante.edu.br', '$2a$10$hashedpassword1', 150.0, 2, 'https://avatar.com/joao', true, '2024-01-15 08:00:00', '2024-01-15 08:00:00'),
-(2, 'TEACHER', 'Prof. Maria Santos', 'maria.santos@professor.edu.br', '$2a$10$hashedpassword2', 500.0, 5, 'https://avatar.com/maria', true, '2024-01-10 09:00:00', '2024-01-10 09:00:00'),
-(3, 'STUDENT', 'Carlos Oliveira', 'carlos.oliveira@estudante.edu.br', '$2a$10$hashedpassword3', 75.0, 1, 'https://avatar.com/carlos', true, '2024-01-20 10:00:00', '2024-01-20 10:00:00'),
-(4, 'STUDENT', 'Ana Costa', 'ana.costa@estudante.edu.br', '$2a$10$hashedpassword4', 300.0, 3, 'https://avatar.com/ana', true, '2024-01-12 11:00:00', '2024-01-12 11:00:00'),
-(5, 'ADMIN', 'Admin Sistema', 'admin@sistema.edu.br', '$2a$10$hashedpassword5', 1000.0, 10, 'https://avatar.com/admin', true, '2024-01-01 12:00:00', '2024-01-01 12:00:00');
+INSERT INTO users (id, role, name, email, password, cpf, phone, enrollmentid, xp, level, avatar_url, is_active, created_at, updated_at) VALUES
+(1, 'STUDENT', 'João Silva', 'joao.silva@estudante.edu.br', '$2a$10$hashedpassword1', '12345678901', '11987654321', 202401, 150.0, 2, 'https://avatar.com/joao', true, '2024-01-15 08:00:00', '2024-01-15 08:00:00'),
+(2, 'TEACHER', 'Prof. Maria Santos', 'maria.santos@professor.edu.br', '$2a$10$hashedpassword2', '98765432109', '11912345678', NULL, 500.0, 5, 'https://avatar.com/maria', true, '2024-01-10 09:00:00', '2024-01-10 09:00:00'),
+(3, 'STUDENT', 'Carlos Oliveira', 'carlos.oliveira@estudante.edu.br', '$2a$10$hashedpassword3', '45678912301', '11976543210', 202402, 75.0, 1, 'https://avatar.com/carlos', true, '2024-01-20 10:00:00', '2024-01-20 10:00:00'),
+(4, 'STUDENT', 'Ana Costa', 'ana.costa@estudante.edu.br', '$2a$10$hashedpassword4', '78912345602', '11965432109', 202403, 300.0, 3, 'https://avatar.com/ana', true, '2024-01-12 11:00:00', '2024-01-12 11:00:00'),
+(5, 'ADMIN', 'Admin Sistema', 'admin@sistema.edu.br', '$2a$10$hashedpassword5', '32165498703', '11954321098', NULL, 1000.0, 10, 'https://avatar.com/admin', true, '2024-01-01 12:00:00', '2024-01-01 12:00:00'),
+(6, 'STUDENT', 'Fernanda Lima', 'fernanda.lima@estudante.edu.br', '$2a$10$hashedpassword6', '11122233344', '11944445555', 202404, 50.0, 1, 'https://avatar.com/fernanda', true, '2024-01-25 13:00:00', '2024-01-25 13:00:00'),
+(7, 'TEACHER', 'Prof. Ricardo Mendes', 'ricardo.mendes@professor.edu.br', '$2a$10$hashedpassword7', '55566677788', '11933332222', NULL, 650.0, 7, 'https://avatar.com/ricardo', true, '2024-01-05 14:00:00', '2024-01-05 14:00:00'),
+(8, 'STUDENT', 'Guilherme Rocha', 'guilherme.rocha@estudante.edu.br', '$2a$10$hashedpassword8', '99988877766', '11922221111', 202405, 120.0, 2, 'https://avatar.com/guilherme', true, '2024-02-01 15:00:00', '2024-02-01 15:00:00'),
+(9, 'STUDENT', 'Isabela Gomes', 'isabela.gomes@estudante.edu.br', '$2a$10$hashedpassword9', '44455566677', '11911110000', 202406, 210.0, 3, 'https://avatar.com/isabela', true, '2024-02-05 16:00:00', '2024-02-05 16:00:00'),
+(10, 'ADMIN', 'Gerente Financeiro', 'gerente@sistema.edu.br', '$2a$10$hashedpassword10', '00011122233', '11900009999', NULL, 1200.0, 12, 'https://avatar.com/gerente', true, '2023-12-01 17:00:00', '2023-12-01 17:00:00'),
+(11, 'TEACHER', 'Prof. Laura Bessa', 'laura.bessa@professor.edu.br', '$2a$10$hashedpassword12', '33322211100', '11977776666', NULL, 450.0, 5, 'https://avatar.com/laura', true, '2024-01-01 19:00:00', '2024-01-01 19:00:00'),
+(12, 'STUDENT', 'Lucas Pereira', 'lucas.pereira@estudante.edu.br', '$2a$10$hashedpassword14', '22233344455', '11955554444', 202409, 400.0, 4, 'https://avatar.com/lucas', false, '2024-02-20 21:00:00', '2024-02-20 21:00:00'),
+(13, 'TEACHER', 'Prof. Bruno Oliveira', 'bruno.oliveira@professor.edu.br', '$2a$10$hashedpassword15', '77766655544', '11944443333', NULL, 800.0, 8, 'https://avatar.com/bruno', true, '2023-11-15 22:00:00', '2023-11-15 22:00:00'),
+(14, 'STUDENT', 'Sofia Batista', 'sofia.batista@estudante.edu.br', '$2a$10$hashedpassword16', '10120230340', '11933334444', 202410, 50.0, 1, 'https://avatar.com/sofia', true, '2024-03-01 07:30:00', '2024-03-01 07:30:00'),
+(15, 'ADMIN', 'Supervisor RH', 'supervisor.rh@sistema.edu.br', '$2a$10$hashedpassword17', '54321098765', '11922223333', NULL, 900e0, 9, 'https://avatar.com/supervisor', false, '2024-03-05 08:30:00', '2024-03-05 08:30:00');
 SELECT setval('users_seq', (SELECT MAX(id) FROM users), true);
 
 -- 2. COURSES
@@ -93,6 +103,5 @@ INSERT INTO project_comments (id, text, project_id, author_id, is_active, create
 (3, 'A API está muito bem documentada. Seria possível adicionar testes unitários?', 3, 2, true, '2024-02-11 11:30:00', '2024-02-11 11:30:00'),
 (4, 'Dashboard ficou incrível! Os gráficos estão muito informativos. Qual biblioteca usou?', 4, 1, true, '2024-02-16 10:15:00', '2024-02-16 10:15:00'),
 (5, 'App de fitness tem um design muito clean. Pretende adicionar integração com wearables?', 5, 4, true, '2024-02-19 12:45:00', '2024-02-19 12:45:00');
-SELECT setval('project_comments_seq', (SELECT MAX(id) FROM project_comments), true);
 SELECT setval('project_comments_seq', (SELECT MAX(id) FROM project_comments), true);
 

@@ -112,9 +112,13 @@ public class ProjectService {
         user.name,
         user.email,
         user.role,
+        user.enrollmentId,
+        user.CPF,
+        user.phone,
         user.xp,
         user.level,
         user.avatarUrl,
+        user.isActive,
         user.createdAt);
   }
 }
